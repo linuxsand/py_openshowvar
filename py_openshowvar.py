@@ -2,6 +2,10 @@
 A Python port of KUKA Varproxy client (OpenShowVar).
 
 run test() to see usage.
+
+Authors:
+    - Message format analysis: Liang Tao
+    - Programming: Huang Jie
 '''
 
 import struct
