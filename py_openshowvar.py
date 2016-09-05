@@ -18,6 +18,15 @@ class openshowvar(object):
         self.port = port
         self.msg_id = random.randint(1, 100)
 
+    def test_connection(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            ret = sock.connect_ex((self.ip, self.port))
+            return ret == 0
+        except socket.error:
+            print 'socket error'
+            return False
+
     def read(self, var):
         if not isinstance(var, str):
             raise Exception('Var name is a string')
@@ -95,16 +104,17 @@ class openshowvar(object):
             return var_value
 
 def test():
-    foo = openshowvar('192.168.19.247', 7000)
-
+    foo = openshowvar('192.168.19.246', 7000)
+    if foo.test_connection() == False:
+        print 'connection error'
+        import sys
+        sys.exit(-1)
     foo.write('$OV_PRO', str(random.randint(30, 50)))
-    current_ov = foo.read('$OV_PRO')
     print 'start: $OV_PRO minus one, until zero'
 
-    counter = int(current_ov)
-    for i in range(int(current_ov)):
-        foo.write('$OV_PRO', str(counter - 1))
-        counter -= 1
+    ov = int(current_ov)
+    for i in range(ov, 0, -1):
+        foo.write('$OV_PRO', str(i))
 
 if __name__ == '__main__':
     test()
