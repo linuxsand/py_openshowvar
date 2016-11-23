@@ -27,12 +27,12 @@ class openshowvar(object):
             print 'socket error'
             return False
 
-    def read(self, var):
+    def read(self, var, debug=False):
         if not isinstance(var, str):
             raise Exception('Var name is a string')
         else:
             self.varname = var
-        return self._read_var()
+        return self._read_var(debug)
 
     def write(self, var, value):
         if not (isinstance(var, str) and isinstance(value, str)):
@@ -41,10 +41,10 @@ class openshowvar(object):
         self.value = value
         return self._write_var()
 
-    def _read_var(self):
+    def _read_var(self, debug=False):
         req = self._pack_read_req()
         self._send_req(req)
-        _value = self._read_rsp()
+        _value = self._read_rsp(debug)
         print '[read req] data recv:', _value
         return _value
 
@@ -98,7 +98,7 @@ class openshowvar(object):
         result = struct.unpack('!HHBH'+str(var_value_len)+'s'+'3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
         if debug:
-            print result,
+            print '[DEBUG]', result,
         if result[-1].endswith('\x01') and _msg_id == self.msg_id:   # todo
             self.msg_id += 1
             return var_value
