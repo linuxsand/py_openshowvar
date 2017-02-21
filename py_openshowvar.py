@@ -1,8 +1,6 @@
 '''
 A Python port of KUKA Varproxy client (OpenShowVar).
 
-run test() to see usage.
-
 Authors:
     - Message format analysis: Liang Tao
     - Programming: Huang Jie
@@ -31,6 +29,8 @@ class openshowvar(object):
         except socket.error:
             print 'socket error'
             return False
+
+    can_connect = property(test_connection)
 
     def read(self, var, debug=False):
         if not isinstance(var, str):
@@ -111,7 +111,7 @@ class openshowvar(object):
 
 def test():
     foo = openshowvar('192.168.19.246', 7000)
-    if foo.test_connection() == False:
+    if not foo.can_connect:
         print 'connection error'
         import sys
         sys.exit(-1)
@@ -124,7 +124,7 @@ def test():
 
 def test2():
     foo = openshowvar('192.168.19.133', 7001)
-    if foo.test_connection() == False:
+    if not foo.can_connect:
         print 'connection error'
         import sys
         sys.exit(-1)
