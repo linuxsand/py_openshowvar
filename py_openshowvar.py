@@ -17,7 +17,12 @@ class openshowvar(object):
         self.ip = ip
         self.port = port
         self.msg_id = random.randint(1, 100)
-
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.sock.connect((self.ip, self.port))
+        except Exception:
+            pass
+        
     def test_connection(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -45,22 +50,23 @@ class openshowvar(object):
         req = self._pack_read_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print '[read req] data recv:', _value
+        print 'read value -->', _value
         return _value
 
     def _write_var(self):
         req = self._pack_write_req()
         self._send_req(req)
         _value = self._read_rsp()
-        print '[write req] data recv:', _value
+        print 'write value -->', _value
         return _value
 
     def _send_req(self, req):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((self.ip, self.port))
-        sock.sendall(req)
-        self.rsp = sock.recv(256)
-        sock.close()
+        try:
+            self.sock.sendall(req)
+        except Exception:
+            self.sock.close()
+            return
+        self.rsp = self.sock.recv(256)
 
     def _pack_read_req(self):
         var_name_len = len(self.varname)
@@ -98,7 +104,7 @@ class openshowvar(object):
         result = struct.unpack('!HHBH'+str(var_value_len)+'s'+'3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
         if debug:
-            print '[DEBUG]', result,
+            print '[DEBUG]', result
         if result[-1].endswith('\x01') and _msg_id == self.msg_id:   # todo
             self.msg_id += 1
             return var_value
@@ -116,5 +122,17 @@ def test():
     for i in range(ov, 0, -1):
         foo.write('$OV_PRO', str(i))
 
+def test2():
+    foo = openshowvar('192.168.19.133', 7001)
+    if foo.test_connection() == False:
+        print 'connection error'
+        import sys
+        sys.exit(-1)
+    while True:
+        varname = raw_input('\nInput var name (`q` for quit): ')
+        if varname == 'q': break
+        foo.read(varname, True)
+
 if __name__ == '__main__':
-    test()
+    test2()
+
