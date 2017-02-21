@@ -32,31 +32,31 @@ class openshowvar(object):
 
     can_connect = property(test_connection)
 
-    def read(self, var, debug=False):
+    def read(self, var, debug=True):
         if not isinstance(var, str):
             raise Exception('Var name is a string')
         else:
             self.varname = var
         return self._read_var(debug)
 
-    def write(self, var, value):
+    def write(self, var, value, debug=True):
         if not (isinstance(var, str) and isinstance(value, str)):
             raise Exception('Var name and its value should be string')
         self.varname = var
         self.value = value
-        return self._write_var()
+        return self._write_var(debug)
 
-    def _read_var(self, debug=False):
+    def _read_var(self, debug):
         req = self._pack_read_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
         print 'read value -->', _value
         return _value
 
-    def _write_var(self):
+    def _write_var(self, debug):
         req = self._pack_write_req()
         self._send_req(req)
-        _value = self._read_rsp()
+        _value = self._read_rsp(debug)
         print 'write value -->', _value
         return _value
 
@@ -127,9 +127,14 @@ def test2():
         import sys
         sys.exit(-1)
     while True:
-        varname = raw_input('\nInput var name (`q` for quit): ')
-        if varname == 'q': break
-        foo.read(varname, True)
+        data = raw_input('\nInput var_name [, var_value]\n(`q` for quit): ')
+        if data.lower() == 'q': break
+        else:
+            parts = data.split(',')
+            if len(parts) == 1:
+                foo.read(data.strip(), True)
+            else:
+                foo.write(parts[0], parts[1], True)
 
 if __name__ == '__main__':
     test2()
