@@ -18,7 +18,7 @@ class openshowvar(object):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.sock.connect((self.ip, self.port))
-        except Exception:
+        except socket.error:
             pass
         
     def test_connection(self):
@@ -61,11 +61,8 @@ class openshowvar(object):
         return _value
 
     def _send_req(self, req):
-        try:
-            self.sock.sendall(req)
-        except Exception:
-            self.sock.close()
-            return
+        self.rsp = None
+        self.sock.sendall(req)
         self.rsp = self.sock.recv(256)
 
     def _pack_read_req(self):
@@ -100,6 +97,7 @@ class openshowvar(object):
             )
 
     def _read_rsp(self, debug=False):
+        if self.rsp is None: return None
         var_value_len = len(self.rsp) - struct.calcsize('!HHBH') - 3
         result = struct.unpack('!HHBH'+str(var_value_len)+'s'+'3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
