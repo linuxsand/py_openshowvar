@@ -1,9 +1,5 @@
 '''
-A Python port of KUKA Varproxy client (OpenShowVar).
-
-Authors:
-    - Message format analysis: Liang Tao
-    - Programming: Huang Jie
+A Python port of KUKA VarProxy client (OpenShowVar).
 '''
 
 import struct
@@ -107,8 +103,13 @@ class openshowvar(object):
             self.msg_id += 1
             return var_value
 
-def test():
-    foo = openshowvar('192.168.19.246', 7000)
+    def close(self):
+        self.sock.close()
+
+IP = '192.168.50.28'
+        
+def minus_ov_pro():
+    foo = openshowvar(IP, 7000)
     if not foo.can_connect:
         print 'connection error'
         import sys
@@ -120,15 +121,17 @@ def test():
     for i in range(ov, 0, -1):
         foo.write('$OV_PRO', str(i))
 
-def test2():
-    foo = openshowvar('192.168.19.133', 7001)
+def run_shell(ip):
+    foo = openshowvar(ip, 7001)
     if not foo.can_connect:
         print 'connection error'
         import sys
         sys.exit(-1)
     while True:
         data = raw_input('\nInput var_name [, var_value]\n(`q` for quit): ')
-        if data.lower() == 'q': break
+        if data.lower() == 'q':
+            foo.close()
+            break
         else:
             parts = data.split(',')
             if len(parts) == 1:
@@ -136,6 +139,7 @@ def test2():
             else:
                 foo.write(parts[0], parts[1], True)
 
+     
 if __name__ == '__main__':
-    test2()
+    run_shell(IP)
 
