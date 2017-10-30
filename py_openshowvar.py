@@ -46,14 +46,14 @@ class openshowvar(object):
         req = self._pack_read_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print 'read value -->', _value
+        print _value
         return _value
 
     def _write_var(self, debug):
         req = self._pack_write_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print 'write value -->', _value
+        print _value
         return _value
 
     def _send_req(self, req):
@@ -106,10 +106,8 @@ class openshowvar(object):
     def close(self):
         self.sock.close()
 
-IP = '192.168.50.28'
-        
-def minus_ov_pro():
-    foo = openshowvar(IP, 7000)
+def minus_ov_pro(ip, port):
+    foo = openshowvar(ip, port)
     if not foo.can_connect:
         print 'connection error'
         import sys
@@ -121,15 +119,18 @@ def minus_ov_pro():
     for i in range(ov, 0, -1):
         foo.write('$OV_PRO', str(i))
 
-def run_shell(ip):
-    foo = openshowvar(ip, 7001)
+def run_shell(ip, port):
+    foo = openshowvar(ip, port)
     if not foo.can_connect:
         print 'connection error'
         import sys
         sys.exit(-1)
+    print '\nConnected KRC Name: ',
+    foo.read('$ROBNAME[]', False)
     while True:
         data = raw_input('\nInput var_name [, var_value]\n(`q` for quit): ')
         if data.lower() == 'q':
+            print 'Bye'
             foo.close()
             break
         else:
@@ -137,9 +138,12 @@ def run_shell(ip):
             if len(parts) == 1:
                 foo.read(data.strip(), True)
             else:
-                foo.write(parts[0], parts[1], True)
+                foo.write(parts[0], parts[1].lstrip(), True)
 
      
 if __name__ == '__main__':
-    run_shell(IP)
+    # minus_ov_pro('127.0.0.1', 7001)
+    ip = raw_input('IP Address: ')
+    port = raw_input('Port: ')
+    run_shell(ip, int(port))
 
