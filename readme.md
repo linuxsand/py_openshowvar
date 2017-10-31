@@ -1,5 +1,7 @@
 A Python port of KUKA VarProxy client (OpenShowVar).
 
+Supported Python version: 2.6+ / 3.3+, tested at 2.7.11 and 3.6.3.
+
 Module usage:
 
         >>> from py_openshowvar import openshowvar
