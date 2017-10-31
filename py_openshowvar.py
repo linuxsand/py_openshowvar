@@ -2,13 +2,9 @@
 A Python port of KUKA VarProxy client (OpenShowVar).
 '''
 
-from __future__ import print_function
-import sys
 import struct
 import random
 import socket
-
-if sys.version_info[0] == 2: input = raw_input
 
 class openshowvar(object):
     def __init__(self, ip, port):
@@ -27,7 +23,7 @@ class openshowvar(object):
             ret = sock.connect_ex((self.ip, self.port))
             return ret == 0
         except socket.error:
-            print('socket error')
+            print 'socket error'
             return False
 
     can_connect = property(test_connection)
@@ -50,14 +46,14 @@ class openshowvar(object):
         req = self._pack_read_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print(_value)
+        print _value
         return _value
 
     def _write_var(self, debug):
         req = self._pack_write_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print(_value)
+        print _value
         return _value
 
     def _send_req(self, req):
@@ -102,7 +98,7 @@ class openshowvar(object):
         result = struct.unpack('!HHBH'+str(var_value_len)+'s'+'3s', self.rsp)
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
         if debug:
-            print('[DEBUG]', result)
+            print '[DEBUG]', result
         if result[-1].endswith('\x01') and _msg_id == self.msg_id:   # todo
             self.msg_id += 1
             return var_value
@@ -113,11 +109,11 @@ class openshowvar(object):
 def minus_ov_pro(ip, port):
     foo = openshowvar(ip, port)
     if not foo.can_connect:
-        print('connection error')
+        print 'connection error'
         import sys
         sys.exit(-1)
     foo.write('$OV_PRO', str(random.randint(30, 50)))
-    print('start: $OV_PRO minus one, until zero')
+    print 'start: $OV_PRO minus one, until zero'
 
     ov = int(current_ov)
     for i in range(ov, 0, -1):
@@ -126,15 +122,15 @@ def minus_ov_pro(ip, port):
 def run_shell(ip, port):
     foo = openshowvar(ip, port)
     if not foo.can_connect:
-        print('connection error')
+        print 'connection error'
         import sys
         sys.exit(-1)
-    print('\nConnected KRC Name: ', end=' ')
+    print '\nConnected KRC Name: ',
     foo.read('$ROBNAME[]', False)
     while True:
-        data = input('\nInput var_name [, var_value]\n(`q` for quit): ')
+        data = raw_input('\nInput var_name [, var_value]\n(`q` for quit): ')
         if data.lower() == 'q':
-            print('Bye')
+            print 'Bye'
             foo.close()
             break
         else:
@@ -147,7 +143,7 @@ def run_shell(ip, port):
      
 if __name__ == '__main__':
     # minus_ov_pro('127.0.0.1', 7001)
-    ip = input('IP Address: ')
-    port = input('Port: ')
+    ip = raw_input('IP Address: ')
+    port = raw_input('Port: ')
     run_shell(ip, int(port))
 
