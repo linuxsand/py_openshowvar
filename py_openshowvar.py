@@ -8,10 +8,12 @@ import struct
 import random
 import socket
 
+__version__ = '1.1.2'
+ENCODING = 'UTF-8'
+
 PY2 = sys.version_info[0] == 2
 if PY2: input = raw_input
 
-ENCODING = 'utf-8'
 
 class openshowvar(object):
     def __init__(self, ip, port):
@@ -23,7 +25,7 @@ class openshowvar(object):
             self.sock.connect((self.ip, self.port))
         except socket.error:
             pass
-        
+
     def test_connection(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -106,50 +108,40 @@ class openshowvar(object):
         _msg_id, body_len, flag, var_value_len, var_value, isok = result
         if debug:
             print('[DEBUG]', result)
-        if result[-1].endswith(b'\x01') and _msg_id == self.msg_id:   # todo
+        if result[-1].endswith(b'\x01') and _msg_id == self.msg_id:
             self.msg_id += 1
             return var_value
 
     def close(self):
         self.sock.close()
 
-def minus_ov_pro(ip, port):
-    foo = openshowvar(ip, port)
-    if not foo.can_connect:
-        print('connection error')
-        import sys
-        sys.exit(-1)
-    foo.write('$OV_PRO', str(random.randint(30, 50)))
-    print('start: $OV_PRO minus one, until zero')
 
-    ov = int(current_ov)
-    for i in range(ov, 0, -1):
-        foo.write('$OV_PRO', str(i))
+############### test ###############
+
 
 def run_shell(ip, port):
-    foo = openshowvar(ip, port)
-    if not foo.can_connect:
-        print('connection error')
+    client = openshowvar(ip, port)
+    if not client.can_connect:
+        print('Connection error')
         import sys
         sys.exit(-1)
     print('\nConnected KRC Name: ', end=' ')
-    foo.read('$ROBNAME[]', False)
+    client.read('$ROBNAME[]', False)
     while True:
         data = input('\nInput var_name [, var_value]\n(`q` for quit): ')
         if data.lower() == 'q':
             print('Bye')
-            foo.close()
+            client.close()
             break
         else:
             parts = data.split(',')
             if len(parts) == 1:
-                foo.read(data.strip(), True)
+                client.read(data.strip(), True)
             else:
-                foo.write(parts[0], parts[1].lstrip(), True)
+                client.write(parts[0], parts[1].lstrip(), True)
 
-     
+
 if __name__ == '__main__':
-    # minus_ov_pro('127.0.0.1', 7001)
     ip = input('IP Address: ')
     port = input('Port: ')
     run_shell(ip, int(port))
