@@ -11,7 +11,9 @@ Supports 2.6+ / 3.3+, tested at 2.7.11 and 3.6.3.
 Install
 ========
 
-`pip install py_openshowvar`
+On PYPI: `<https://pypi.python.org/pypi/py-openshowvar>`_
+
+``pip install py_openshowvar``
 
 Usage
 ======
