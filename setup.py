@@ -14,6 +14,7 @@ setup(
     author='Huang Jie',
     author_email='j.huang@reisrobotics.cn',
     license='MIT',
+    py_modules=['py_openshowvar'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
