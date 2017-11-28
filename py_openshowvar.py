@@ -8,7 +8,7 @@ import struct
 import random
 import socket
 
-__version__ = '1.1.2'
+__version__ = '1.1.4'
 ENCODING = 'UTF-8'
 
 PY2 = sys.version_info[0] == 2
