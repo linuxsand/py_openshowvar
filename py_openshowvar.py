@@ -8,7 +8,7 @@ import struct
 import random
 import socket
 
-__version__ = '1.1.5'
+__version__ = '1.1.6'
 ENCODING = 'UTF-8'
 
 PY2 = sys.version_info[0] == 2
@@ -109,7 +109,7 @@ class openshowvar(object):
         if debug:
             print('[DEBUG]', result)
         if result[-1].endswith(b'\x01') and _msg_id == self.msg_id:
-            self.msg_id = (self.msg_id + 1) % 65536
+            self.msg_id = (self.msg_id + 1) % 65536  # format char 'H' is 2 bytes long
             return var_value
 
     def close(self):
