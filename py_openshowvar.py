@@ -109,7 +109,7 @@ class openshowvar(object):
         if debug:
             print('[DEBUG]', result)
         if result[-1].endswith(b'\x01') and _msg_id == self.msg_id:
-            self.msg_id += 1
+            self.msg_id = (self.msg_id + 1) % 65536
             return var_value
 
     def close(self):
