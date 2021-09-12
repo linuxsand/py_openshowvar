@@ -55,14 +55,16 @@ class openshowvar(object):
         req = self._pack_read_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print(_value)
+        if debug:
+            print(_value)
         return _value
 
     def _write_var(self, debug):
         req = self._pack_write_req()
         self._send_req(req)
         _value = self._read_rsp(debug)
-        print(_value)
+        if debug:
+            print(_value)
         return _value
 
     def _send_req(self, req):
