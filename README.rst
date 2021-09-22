@@ -29,7 +29,7 @@ Module usage:
     >>> ov = client.read('$OV_PRO', debug=True)
     [DEBUG] (48, 6, 0, 3, '100', '\x00\x01\x01')
     100
-    >>> print ov
+    >>> print(ov)
     100
     >>> client.close()
 
